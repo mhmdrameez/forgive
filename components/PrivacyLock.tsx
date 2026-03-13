@@ -15,6 +15,7 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
     const [hasSetPin, setHasSetPin] = useState(false);
     const [confirmPin, setConfirmPin] = useState("");
     const [mode, setMode] = useState<"enter" | "setup" | "confirm">("enter");
+    const [isProcessing, setIsProcessing] = useState(false);
 
     useEffect(() => {
         const savedHash = localStorage.getItem("vault-check");
@@ -25,6 +26,14 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
         }
     }, []);
 
+    useEffect(() => {
+        if (pin.length === 6 && !isProcessing) {
+            if (mode === "enter") handleUnlock();
+            else if (mode === "setup") handleSetup();
+            else if (mode === "confirm") handleConfirm();
+        }
+    }, [pin, mode, isProcessing]);
+
     const handleUnlock = async () => {
         if (pin.length !== 6) {
             setError(true);
@@ -32,22 +41,29 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
             return;
         }
 
+        setIsProcessing(true);
         try {
             const sentinel = localStorage.getItem("vault-sentinel");
-            if (sentinel) {
-                // Try to decrypt the sentinel to verify the PIN
-                const { decryptData } = await import("@/lib/crypto");
-                await decryptData(sentinel, pin);
+            if (!sentinel) {
+                // Should not happen if vault-check is set, but safety first:
+                setMode("setup");
+                setIsProcessing(false);
+                return;
             }
 
-            // If we got here, either no sentinel exists (first time) or decryption succeeded
+            // Try to decrypt the sentinel to verify the PIN
+            const { decryptData } = await import("@/lib/crypto");
+            await decryptData(sentinel, pin);
+
+            // Success: Unlock the app
             (window as any).__vault_key = pin;
             setIsLocked(false);
         } catch (e) {
             setError(true);
             setPin("");
             setTimeout(() => setError(false), 500);
-            console.error("Invalid PIN attempt");
+        } finally {
+            setIsProcessing(false);
         }
     };
 
@@ -61,6 +77,7 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
 
     const handleConfirm = async () => {
         if (pin === confirmPin) {
+            setIsProcessing(true);
             try {
                 // Create an encrypted sentinel to verify PIN in the future
                 const { encryptData } = await import("@/lib/crypto");
@@ -73,6 +90,8 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
             } catch (e) {
                 console.error("Setup failed:", e);
                 setError(true);
+            } finally {
+                setIsProcessing(false);
             }
         } else {
             setError(true);
@@ -94,22 +113,24 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
                 <div className="flex justify-center">
                     <div className="w-20 h-20 rounded-full bg-[var(--primary)]/10 flex items-center justify-center relative">
                         <motion.div
-                            animate={error ? { x: [-5, 5, -5, 5, 0] } : {}}
-                            transition={{ duration: 0.4 }}
+                            animate={error ? { x: [-5, 5, -5, 5, 0] } : isProcessing ? { scale: [1, 1.1, 1], rotate: 360 } : {}}
+                            transition={isProcessing ? { duration: 1, repeat: Infinity } : { duration: 0.4 }}
                         >
-                            {mode === "enter" ? <Lock className="text-[var(--primary)]" size={32} /> : <KeyRound className="text-[var(--primary)]" size={32} />}
+                            {isProcessing ? <div className="w-8 h-8 rounded-full border-2 border-[var(--primary)] border-t-transparent animate-spin" /> : mode === "enter" ? <Lock className="text-[var(--primary)]" size={32} /> : <KeyRound className="text-[var(--primary)]" size={32} />}
                         </motion.div>
                     </div>
                 </div>
 
                 <div className="space-y-2">
-                    <h2 className="text-2xl font-light text-[var(--foreground)]">
-                        {mode === "enter" ? "Enter Vault PIN" : mode === "setup" ? "Secure Your Vault" : "Confirm Your PIN"}
+                    <h2 className={`text-2xl font-light transition-colors ${error ? "text-red-500" : "text-[var(--foreground)]"}`}>
+                        {error ? "Wrong PIN" : mode === "enter" ? "Enter Vault PIN" : mode === "setup" ? "Secure Your Vault" : "Confirm Your PIN"}
                     </h2>
                     <p className="text-xs text-[var(--nav-inactive)] leading-relaxed px-4">
                         {mode === "enter"
                             ? "Your data is encrypted. Enter your 6-digit PIN to unlock it."
-                            : "Create a 6-digit PIN. This will be the only way to read your letters. Don't forget it!"}
+                            : mode === "setup"
+                                ? "Create a 6-digit PIN. This will be the only way to read your letters."
+                                : "Please type your 6-digit PIN again to confirm."}
                     </p>
                 </div>
 
