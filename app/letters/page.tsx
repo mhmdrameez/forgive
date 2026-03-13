@@ -119,14 +119,14 @@ export default function Letters() {
                         </div>
 
                         <input
-                            className="w-full text-xl font-medium px-6 py-4 outline-none text-[var(--foreground)]"
+                            className="w-full text-xl font-medium px-6 py-4 outline-none"
                             placeholder="Title or Recipient..."
                             value={newTitle}
                             onChange={(e) => setNewTitle(e.target.value)}
                         />
 
                         <textarea
-                            className="w-full flex-1 px-6 py-2 outline-none resize-none text-[var(--foreground)] text-sm leading-relaxed"
+                            className="w-full flex-1 px-6 py-2 outline-none resize-none text-sm leading-relaxed"
                             placeholder="Write everything you are feeling. This stays on your device."
                             value={newContent}
                             onChange={(e) => setNewContent(e.target.value)}

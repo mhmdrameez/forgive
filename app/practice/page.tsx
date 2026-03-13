@@ -94,7 +94,7 @@ export default function Practice() {
                     <div className="flex-1">
                         {current.type === "text" && (
                             <textarea
-                                className="w-full h-48 p-4 text-[var(--foreground)] bg-white rounded-2xl shadow-sm border border-[var(--accent)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none resize-none"
+                                className="w-full h-48 p-4 bg-white rounded-2xl shadow-sm border border-[var(--accent)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none resize-none"
                                 placeholder="Type here privately..."
                                 value={(responses[current.id] as string) || ""}
                                 onChange={(e) => setResponses({ ...responses, [current.id]: e.target.value })}

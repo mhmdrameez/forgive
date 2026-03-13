@@ -41,7 +41,7 @@ export default function Ceremony() {
                             Type something heavy you are ready to let go of.
                         </p>
                         <textarea
-                            className="w-full h-32 p-4 text-[var(--foreground)] bg-white rounded-2xl shadow-sm border border-[var(--accent)] outline-none resize-none text-center"
+                            className="w-full h-32 p-4 bg-white rounded-2xl shadow-sm border border-[var(--accent)] outline-none resize-none text-center"
                             placeholder="I am carrying..."
                             value={thought}
                             autoFocus

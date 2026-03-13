@@ -2,27 +2,31 @@
 
 :root {
   --background: #FCFAF8;
-  --foreground: #2D3748;
+  --foreground: #000000;
+  /* Pure Black for maximum contrast */
   --accent: #E2E8F0;
   --primary: #81E6D9;
   --primary-dark: #319795;
   --nav-bg: #FFFFFF;
   --nav-active: #319795;
-  --nav-inactive: #A0AEC0;
+  --nav-inactive: #4A5568;
+  /* Darker Gray (Lite Black) for visibility */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1A202C;
-    --foreground: #E2E8F0;
-    --accent: #2D3748;
+    --background: #000000;
+    /* Deep black for dark mode */
+    --foreground: #FFFFFF;
+    /* Pure white for dark mode */
+    --accent: #1A202C;
     --primary: #4FD1C5;
     --primary-dark: #38B2AC;
-    --nav-bg: #2D3748;
+    --nav-bg: #1A202C;
     --nav-active: #4FD1C5;
-    --nav-inactive: #718096;
+    --nav-inactive: #A0AEC0;
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
   }
@@ -41,9 +45,28 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Fix for placeholder visibility and typed text contrast */
+input::placeholder,
+textarea::placeholder {
+  color: var(--nav-inactive) !important;
+  opacity: 1 !important;
+  /* Fully solid "lite black" */
+}
+
+input,
+textarea {
+  color: #000000 !important;
+  /* Always black text for "pen on paper" feel */
+  background-color: #FFFFFF !important;
+  /* Always white background to match component design */
+  opacity: 1 !important;
+  font-weight: 400;
+}
+
 main {
   flex: 1;
-  padding-bottom: 5rem; /* Space for bottom nav */
+  padding-bottom: 5rem;
+  /* Space for bottom nav */
   display: flex;
   flex-direction: column;
 }
@@ -56,6 +79,7 @@ button {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
