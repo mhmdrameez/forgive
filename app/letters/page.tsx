@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, X, FileText, Trash2 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { t } from "@/lib/translations";
 
 type Letter = {
     id: string;
@@ -16,20 +18,18 @@ export default function Letters() {
     const [letters, setLetters] = useLocalStorage<Letter[]>("forgive-letters", []);
     const [isComposing, setIsComposing] = useState(false);
     const [activeLetter, setActiveLetter] = useState<Letter | null>(null);
-
     const [newTitle, setNewTitle] = useState("");
     const [newContent, setNewContent] = useState("");
+    const { lang } = useLanguage();
 
     const handleSave = () => {
         if (!newTitle.trim() && !newContent.trim()) return;
-
         const letter: Letter = {
             id: Date.now().toString(),
-            title: newTitle.trim() || "My Secret",
+            title: newTitle.trim() || t("letters_secret", lang),
             content: newContent.trim(),
             date: new Date().toLocaleDateString(),
         };
-
         setLetters([letter, ...letters]);
         setIsComposing(false);
         setNewTitle("");
@@ -45,10 +45,9 @@ export default function Letters() {
         <div className="relative min-h-[90vh] p-6 pb-24 flex flex-col">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-light text-[var(--foreground)]">Secret Letters</h1>
-                    <p className="text-sm text-[var(--nav-inactive)] mt-1">Write what you feel. No one else will ever see it.</p>
+                    <h1 className="text-3xl font-light text-[var(--foreground)]">{t("letters_title", lang)}</h1>
+                    <p className="text-sm text-[var(--nav-inactive)] mt-1">{t("letters_write", lang)}</p>
                 </div>
-
                 {!isComposing && !activeLetter && (
                     <button
                         onClick={() => setIsComposing(true)}
@@ -61,17 +60,11 @@ export default function Letters() {
 
             <AnimatePresence mode="wait">
                 {!isComposing && !activeLetter && (
-                    <motion.div
-                        key="list"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="flex-1 flex flex-col gap-4 overflow-y-auto no-scrollbar"
-                    >
+                    <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col gap-4 overflow-y-auto no-scrollbar">
                         {letters.length === 0 ? (
                             <div className="flex-1 flex flex-col items-center justify-center text-[var(--nav-inactive)] opacity-70">
                                 <FileText size={48} className="mb-4 font-light" strokeWidth={1} />
-                                <p>You haven't written any letters yet.</p>
+                                <p>{t("letters_empty", lang)}</p>
                             </div>
                         ) : (
                             letters.map((letter, i) => (
@@ -87,10 +80,7 @@ export default function Letters() {
                                         <h3 className="font-medium text-[var(--foreground)] pr-8">{letter.title}</h3>
                                         <span className="text-xs text-[var(--nav-inactive)]">{letter.date}</span>
                                     </div>
-                                    <p className="text-sm text-[var(--nav-inactive)] line-clamp-2">
-                                        {letter.content}
-                                    </p>
-
+                                    <p className="text-sm text-[var(--nav-inactive)] line-clamp-2">{letter.content}</p>
                                     <button
                                         onClick={(e) => handleDelete(letter.id, e)}
                                         className="absolute top-4 right-4 text-[var(--accent)] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -104,66 +94,44 @@ export default function Letters() {
                 )}
 
                 {isComposing && (
-                    <motion.div
-                        key="compose"
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="flex-1 flex flex-col bg-white rounded-2xl shadow-lg border border-[var(--accent)] overflow-hidden"
-                    >
+                    <motion.div key="compose" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="flex-1 flex flex-col bg-white rounded-2xl shadow-lg border border-[var(--accent)] overflow-hidden">
                         <div className="flex justify-between items-center p-4 border-b border-[var(--accent)]">
-                            <span className="text-sm font-medium text-[var(--nav-inactive)]">New Story</span>
-                            <button onClick={() => setIsComposing(false)} className="text-[var(--nav-inactive)] hover:text-[var(--foreground)]">
-                                <X size={20} />
-                            </button>
+                            <span className="text-sm font-medium text-[var(--nav-inactive)]">{t("letters_new", lang)}</span>
+                            <button onClick={() => setIsComposing(false)} className="text-[var(--nav-inactive)] hover:text-[var(--foreground)]"><X size={20} /></button>
                         </div>
-
                         <input
                             className="w-full text-xl font-medium px-6 py-4 outline-none"
-                            placeholder="Who is this for?"
+                            placeholder={t("letters_who_for", lang)}
                             value={newTitle}
                             onChange={(e) => setNewTitle(e.target.value)}
                         />
-
                         <textarea
                             className="w-full flex-1 px-6 py-2 outline-none resize-none text-sm leading-relaxed"
-                            placeholder="Write everything you are feeling. This stays on your device."
+                            placeholder={t("letters_write", lang)}
                             value={newContent}
                             onChange={(e) => setNewContent(e.target.value)}
                         />
-
                         <div className="p-4 border-t border-[var(--accent)] flex justify-end">
                             <button
                                 onClick={handleSave}
                                 disabled={!newTitle && !newContent}
                                 className="px-6 py-2 bg-[var(--foreground)] text-[var(--nav-bg)] rounded-full text-sm font-medium disabled:opacity-50"
                             >
-                                Save it
+                                {t("letters_save", lang)}
                             </button>
                         </div>
                     </motion.div>
                 )}
 
                 {activeLetter && (
-                    <motion.div
-                        key="view"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        className="flex-1 flex flex-col bg-white rounded-2xl shadow-lg border border-[var(--accent)] overflow-hidden"
-                    >
+                    <motion.div key="view" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="flex-1 flex flex-col bg-white rounded-2xl shadow-lg border border-[var(--accent)] overflow-hidden">
                         <div className="flex justify-between items-center p-4 border-b border-[var(--accent)]">
                             <span className="text-xs text-[var(--nav-inactive)]">{activeLetter.date}</span>
-                            <button onClick={() => setActiveLetter(null)} className="text-[var(--nav-inactive)] hover:text-[var(--foreground)]">
-                                <X size={20} />
-                            </button>
+                            <button onClick={() => setActiveLetter(null)} className="text-[var(--nav-inactive)] hover:text-[var(--foreground)]"><X size={20} /></button>
                         </div>
-
                         <div className="p-6 overflow-y-auto w-full no-scrollbar flex-1 whitespace-pre-wrap breaks-words">
                             <h2 className="text-2xl font-light text-[var(--foreground)] mb-6">{activeLetter.title}</h2>
-                            <p className="text-[var(--foreground)] leading-loose opacity-90 text-sm">
-                                {activeLetter.content}
-                            </p>
+                            <p className="text-[var(--foreground)] leading-loose opacity-90 text-sm">{activeLetter.content}</p>
                         </div>
                     </motion.div>
                 )}

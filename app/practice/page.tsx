@@ -4,14 +4,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, Check } from "lucide-react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-
-const steps = [
-    { id: 1, title: "Say it", subtitle: "What made you sad? Tell me simply.", type: "text" },
-    { id: 2, title: "How heavy?", subtitle: "How heavy does this feel right now? (1-10)", type: "slider" },
-    { id: 3, title: "Let it out", subtitle: "Write what you want to say. It's okay to feel sad.", type: "text" },
-    { id: 4, title: "Let go", subtitle: "I am ready to let this go now.", type: "button", buttonText: "I am letting it go" },
-    { id: 5, title: "Better?", subtitle: "How heavy does it feel now? (1-10)", type: "slider" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
+import { t } from "@/lib/translations";
 
 export default function Practice() {
     const [currentStep, setCurrentStep] = useState(0);
@@ -19,12 +13,20 @@ export default function Practice() {
     type PracticeEntry = { id: number; date: string; initialWeight: number | string; finalWeight: number | string; };
     const [history, setHistory] = useLocalStorage<PracticeEntry[]>("forgive-history", []);
     const [completed, setCompleted] = useState(false);
+    const { lang } = useLanguage();
+
+    const steps = [
+        { id: 1, title: t("practice_step1_title", lang), subtitle: t("practice_step1_sub", lang), type: "text" },
+        { id: 2, title: t("practice_step2_title", lang), subtitle: t("practice_step2_sub", lang), type: "slider" },
+        { id: 3, title: t("practice_step3_title", lang), subtitle: t("practice_step3_sub", lang), type: "text" },
+        { id: 4, title: t("practice_step4_title", lang), subtitle: t("practice_step4_sub", lang), type: "button", buttonText: t("practice_step4_btn", lang) },
+        { id: 5, title: t("practice_step5_title", lang), subtitle: t("practice_step5_sub", lang), type: "slider" },
+    ];
 
     const handleNext = () => {
         if (currentStep < steps.length - 1) {
             setCurrentStep(curr => curr + 1);
         } else {
-            // Save practice
             const newEntry = {
                 id: Date.now(),
                 date: new Date().toISOString(),
@@ -48,15 +50,13 @@ export default function Practice() {
                 >
                     <Check size={40} />
                 </motion.div>
-                <h2 className="text-2xl font-light text-[var(--foreground)]">All Done!</h2>
-                <p className="text-[var(--nav-inactive)] max-w-[280px]">
-                    Every time you do this, you will feel a little better.
-                </p>
+                <h2 className="text-2xl font-light text-[var(--foreground)]">{t("practice_done_title", lang)}</h2>
+                <p className="text-[var(--nav-inactive)] max-w-[280px]">{t("practice_done_sub", lang)}</p>
                 <button
                     onClick={() => window.location.href = '/'}
                     className="mt-8 px-6 py-2 bg-[var(--nav-bg)] border border-[var(--accent)] rounded-xl text-[var(--foreground)] shadow-sm hover:bg-[var(--accent)]/10"
                 >
-                    Return Home
+                    {t("practice_return_home", lang)}
                 </button>
             </div>
         );
@@ -64,13 +64,11 @@ export default function Practice() {
 
     return (
         <div className="flex flex-col min-h-[85vh] p-6 pt-12 pb-24">
-            {/* Progress indicators */}
             <div className="flex gap-2 mb-12">
                 {steps.map((step, idx) => (
                     <div
                         key={step.id}
-                        className={`h-1 flex-1 rounded-full transition-all duration-500 ${idx <= currentStep ? "bg-[var(--primary)]" : "bg-[var(--accent)]"
-                            }`}
+                        className={`h-1 flex-1 rounded-full transition-all duration-500 ${idx <= currentStep ? "bg-[var(--primary)]" : "bg-[var(--accent)]"}`}
                     />
                 ))}
             </div>
@@ -84,18 +82,14 @@ export default function Practice() {
                     transition={{ duration: 0.4 }}
                     className="flex-1 flex flex-col"
                 >
-                    <h2 className="text-3xl font-light text-[var(--foreground)] mb-2">
-                        {current.title}
-                    </h2>
-                    <p className="text-[var(--nav-inactive)] mb-8">
-                        {current.subtitle}
-                    </p>
+                    <h2 className="text-3xl font-light text-[var(--foreground)] mb-2">{current.title}</h2>
+                    <p className="text-[var(--nav-inactive)] mb-8">{current.subtitle}</p>
 
                     <div className="flex-1">
                         {current.type === "text" && (
                             <textarea
                                 className="w-full h-48 p-4 bg-white rounded-2xl shadow-sm border border-[var(--accent)] focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] outline-none resize-none"
-                                placeholder="Type here privately..."
+                                placeholder={t("practice_type_here", lang)}
                                 value={(responses[current.id] as string) || ""}
                                 onChange={(e) => setResponses({ ...responses, [current.id]: e.target.value })}
                             />
@@ -107,15 +101,14 @@ export default function Practice() {
                                     {responses[current.id] || 5}
                                 </span>
                                 <input
-                                    type="range"
-                                    min="1" max="10"
+                                    type="range" min="1" max="10"
                                     value={(responses[current.id] as number) || 5}
                                     onChange={(e) => setResponses({ ...responses, [current.id]: parseInt(e.target.value) })}
                                     className="w-full accent-[var(--primary)]"
                                 />
                                 <div className="flex justify-between w-full text-xs text-[var(--nav-inactive)]">
-                                    <span>Fine</span>
-                                    <span>Very Heavy</span>
+                                    <span>{t("practice_fine", lang)}</span>
+                                    <span>{t("practice_heavy", lang)}</span>
                                 </div>
                             </div>
                         )}
@@ -126,7 +119,7 @@ export default function Practice() {
                                     onClick={handleNext}
                                     className="px-8 py-4 bg-[var(--primary)] text-[var(--nav-bg)] rounded-full text-lg font-medium shadow-[var(--shadow-md)] hover:scale-105 active:scale-95 transition-transform"
                                 >
-                                    {current.buttonText}
+                                    {(current as any).buttonText}
                                 </button>
                             </div>
                         )}
@@ -134,21 +127,19 @@ export default function Practice() {
                 </motion.div>
             </AnimatePresence>
 
-            {/* Navigation Footer */}
             {current.type !== "button" && (
                 <div className="absolute bottom-24 left-6 right-6 flex justify-between items-center max-w-md mx-auto">
                     <button
                         onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
                         className={`text-[var(--nav-inactive)] p-2 ${currentStep === 0 ? "opacity-0 pointer-events-none" : "hover:text-[var(--foreground)]"}`}
                     >
-                        Back
+                        {t("practice_back", lang)}
                     </button>
-
                     <button
                         onClick={handleNext}
                         className="flex items-center gap-2 bg-[var(--foreground)] text-[var(--nav-bg)] px-6 py-3 rounded-full hover:opacity-90 transition-opacity disabled:opacity-50 shadow-sm"
                     >
-                        {currentStep === steps.length - 1 ? "Complete" : "Continue"} <ChevronRight size={18} />
+                        {currentStep === steps.length - 1 ? t("practice_complete", lang) : t("practice_continue", lang)} <ChevronRight size={18} />
                     </button>
                 </div>
             )}

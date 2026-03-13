@@ -3,16 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Heart, Mail, Wind, User } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { t } from "@/lib/translations";
 
 export default function BottomNav() {
     const pathname = usePathname();
+    const { lang } = useLanguage();
 
     const navItems = [
-        { href: "/", label: "Home", icon: Home },
-        { href: "/practice", label: "Heal", icon: Heart },
-        { href: "/ceremony", label: "Stars", icon: Wind },
-        { href: "/letters", label: "Letters", icon: Mail },
-        { href: "/mirror", label: "Look", icon: User },
+        { href: "/", label: t("nav_home", lang), icon: Home },
+        { href: "/practice", label: t("nav_heal", lang), icon: Heart },
+        { href: "/ceremony", label: t("nav_stars", lang), icon: Wind },
+        { href: "/letters", label: t("nav_letters", lang), icon: Mail },
+        { href: "/mirror", label: t("nav_look", lang), icon: User },
     ];
 
     return (

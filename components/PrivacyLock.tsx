@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ShieldAlert, Lock, Unlock, KeyRound } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { t } from "@/lib/translations";
 
 interface PrivacyLockProps {
     children: React.ReactNode;
@@ -12,10 +14,10 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
     const [pin, setPin] = useState("");
     const [isLocked, setIsLocked] = useState(true);
     const [error, setError] = useState(false);
-    const [hasSetPin, setHasSetPin] = useState(false);
     const [confirmPin, setConfirmPin] = useState("");
     const [mode, setMode] = useState<"enter" | "setup" | "confirm">("enter");
     const [isProcessing, setIsProcessing] = useState(false);
+    const { lang } = useLanguage();
 
     useEffect(() => {
         const savedHash = localStorage.getItem("vault-check");
@@ -132,19 +134,19 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
                 <div className="space-y-1">
                     <h2 className={`text-xl font-medium transition-colors ${error ? "text-red-500" : "text-[var(--foreground)]"}`}>
                         {error
-                            ? "Wrong PIN — Try Again"
+                            ? t("lock_wrong", lang)
                             : mode === "enter"
-                                ? "Enter Your PIN"
+                                ? t("lock_enter_title", lang)
                                 : mode === "setup"
-                                    ? "Create a Vault PIN"
-                                    : "Confirm Your PIN"}
+                                    ? t("lock_setup_title", lang)
+                                    : t("lock_confirm_title", lang)}
                     </h2>
                     <p className="text-[11px] text-[var(--nav-inactive)] leading-relaxed px-2">
                         {mode === "enter"
-                            ? "Your data is encrypted. Only your PIN can unlock it."
+                            ? t("lock_enter_sub", lang)
                             : mode === "setup"
-                                ? "Pick a 6-digit PIN. Don't forget it — it's the only key."
-                                : "Type the same PIN again to confirm."}
+                                ? t("lock_setup_sub", lang)
+                                : t("lock_confirm_sub", lang)}
                     </p>
                 </div>
 
@@ -154,8 +156,8 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
                         <div
                             key={i}
                             className={`w-3.5 h-3.5 rounded-full border-2 transition-all duration-200 ${pin.length > i
-                                    ? "bg-[var(--primary)] border-[var(--primary)] scale-110"
-                                    : "border-[var(--accent)]"
+                                ? "bg-[var(--primary)] border-[var(--primary)] scale-110"
+                                : "border-[var(--accent)]"
                                 }`}
                         />
                     ))}

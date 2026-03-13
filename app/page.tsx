@@ -4,18 +4,19 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { t } from "@/lib/translations";
 
 export default function Home() {
   const [hasHydrated, setHasHydrated] = useState(false);
   const [level, setLevel] = useState(0);
+  const { lang } = useLanguage();
 
   useEffect(() => {
     setHasHydrated(true);
-    // Simple logic: fetch completed practices from local storage
-    // using purely native browser APIs for simplicity on hydration
     try {
       const history = JSON.parse(localStorage.getItem("forgive-history") || "[]");
-      setLevel(Math.min(history.length, 5)); // cap at max visual level 5
+      setLevel(Math.min(history.length, 5));
     } catch {
       setLevel(0);
     }
@@ -32,20 +33,21 @@ export default function Home() {
         className="space-y-4"
       >
         <h1 className="text-3xl font-light text-[var(--foreground)] tracking-tight">
-          Hello again.
+          {t("home_greeting", lang)}
         </h1>
         <div className="space-y-4">
           <p className="text-sm text-[var(--nav-inactive)] max-w-[250px] mx-auto leading-relaxed">
-            Your safe place for letting go. Everything is encrypted and private.
+            {t("home_subtitle", lang)}
           </p>
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--primary)]/5 border border-[var(--primary)]/20 rounded-full">
             <div className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
-            <span className="text-[10px] text-[var(--primary-dark)] font-bold uppercase tracking-widest">AES-256 Vault Active</span>
+            <span className="text-[10px] text-[var(--primary-dark)] font-bold uppercase tracking-widest">
+              {t("home_vault_badge", lang)}
+            </span>
           </div>
         </div>
       </motion.div>
 
-      {/* Visual Tracker: A simple growing circle/heart representing capacity to forgive */}
       <motion.div
         className="relative flex items-center justify-center w-64 h-64 mx-auto mt-12 mb-12"
         initial={{ y: 20, opacity: 0 }}
@@ -53,27 +55,17 @@ export default function Home() {
         transition={{ delay: 0.4, duration: 1 }}
       >
         <div className="absolute inset-0 bg-[var(--primary)]/10 rounded-full animate-pulse blur-2xl" />
-
-        {/* Layered circles depending on "level" */}
         <motion.div
           className="absolute inset-0 border border-[var(--primary)]/20 rounded-full"
           animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.6, 0.3] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
-
         <motion.div
           className="relative flex items-center justify-center bg-gradient-to-tr from-[var(--primary)] to-[var(--primary-dark)] rounded-full shadow-lg"
-          animate={{
-            width: 80 + (level * 20),
-            height: 80 + (level * 20)
-          }}
+          animate={{ width: 80 + (level * 20), height: 80 + (level * 20) }}
           transition={{ type: "spring", stiffness: 50 }}
         >
-          <Heart
-            className="text-white drop-shadow-md"
-            size={32 + (level * 4)}
-            fill="currentColor"
-          />
+          <Heart className="text-white drop-shadow-md" size={32 + (level * 4)} fill="currentColor" />
         </motion.div>
       </motion.div>
 
@@ -86,7 +78,7 @@ export default function Home() {
           onClick={() => window.location.href = '/practice'}
           className="px-8 py-3 bg-white text-[var(--primary-dark)] text-sm font-medium rounded-2xl shadow-sm border border-[var(--accent)] hover:shadow-md hover:bg-[var(--accent)]/10"
         >
-          Let's Practice
+          {t("home_cta", lang)}
         </button>
       </motion.div>
     </div>
