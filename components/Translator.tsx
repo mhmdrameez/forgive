@@ -12,8 +12,6 @@ const languages: { code: Lang; name: string; flag: string; dir?: "rtl" }[] = [
     { code: "ta", name: "தமிழ்", flag: "🇮🇳" },
     { code: "te", name: "తెలుగు", flag: "🇮🇳" },
     { code: "ar", name: "العربية", flag: "🇸🇦", dir: "rtl" },
-    { code: "fr", name: "Français", flag: "🇫🇷" },
-    { code: "ur", name: "اردو", flag: "🇵🇰", dir: "rtl" },
 ];
 
 export default function Translator() {
@@ -23,8 +21,8 @@ export default function Translator() {
     const handleSelect = (code: Lang) => {
         setLang(code);
         setIsOpen(false);
-        // Apply RTL direction for Arabic/Urdu
-        document.documentElement.dir = (code === "ar" || code === "ur") ? "rtl" : "ltr";
+        // Apply RTL direction for Arabic
+        document.documentElement.dir = (code === "ar") ? "rtl" : "ltr";
     };
 
     const current = languages.find(l => l.code === lang);
