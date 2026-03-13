@@ -1,38 +1,61 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { encryptData, decryptData } from "@/lib/crypto";
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
-    // State to store our value
-    // Pass initial state function to useState so logic is only executed once
     const [storedValue, setStoredValue] = useState<T>(initialValue);
 
-    // Initialize once client is loaded
+    // Get the vault key (PIN) from global memory if it exists
+    const getVaultKey = () => (window as any).__vault_key as string | undefined;
+
+    // Load and decrypt
     useEffect(() => {
-        try {
-            const item = window.localStorage.getItem(key);
-            if (item) {
-                setStoredValue(JSON.parse(item));
-            } else {
-                window.localStorage.setItem(key, JSON.stringify(initialValue));
+        const loadData = async () => {
+            try {
+                const item = window.localStorage.getItem(key);
+                if (item) {
+                    const vaultKey = getVaultKey();
+
+                    if (vaultKey && (key === "forgive-history" || key === "forgive-letters")) {
+                        try {
+                            const decrypted = await decryptData(item, vaultKey);
+                            setStoredValue(JSON.parse(decrypted));
+                        } catch (e) {
+                            console.error("Encryption error - data might be locked or corrupted", e);
+                            // If decryption fails, we don't overwrite to avoid data loss
+                        }
+                    } else {
+                        setStoredValue(JSON.parse(item));
+                    }
+                } else {
+                    window.localStorage.setItem(key, JSON.stringify(initialValue));
+                }
+            } catch (error) {
+                console.warn(`Error reading localStorage key "${key}":`, error);
             }
-        } catch (error) {
-            console.warn(`Error reading localStorage key "${key}":`, error);
-        }
+        };
+
+        loadData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [key]);
 
-    // Return a wrapped version of useState's setter function that persists the new value to localStorage.
-    const setValue = (value: T | ((val: T) => T)) => {
+    // Save and encrypt
+    const setValue = async (value: T | ((val: T) => T)) => {
         try {
-            // Allow value to be a function so we have same API as useState
-            const valueToStore =
-                value instanceof Function ? value(storedValue) : value;
-            // Save state
+            const valueToStore = value instanceof Function ? value(storedValue) : value;
             setStoredValue(valueToStore);
-            // Save to local storage
+
             if (typeof window !== "undefined") {
-                window.localStorage.setItem(key, JSON.stringify(valueToStore));
+                const jsonValue = JSON.stringify(valueToStore);
+                const vaultKey = getVaultKey();
+
+                if (vaultKey && (key === "forgive-history" || key === "forgive-letters")) {
+                    const encrypted = await encryptData(jsonValue, vaultKey);
+                    window.localStorage.setItem(key, encrypted);
+                } else {
+                    window.localStorage.setItem(key, jsonValue);
+                }
             }
         } catch (error) {
             console.warn(`Error setting localStorage key "${key}":`, error);
