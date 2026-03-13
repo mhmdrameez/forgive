@@ -9,10 +9,10 @@ export default function BottomNav() {
 
     const navItems = [
         { href: "/", label: "Home", icon: Home },
-        { href: "/practice", label: "Practice", icon: Heart },
-        { href: "/ceremony", label: "Release", icon: Wind },
+        { href: "/practice", label: "Heal", icon: Heart },
+        { href: "/ceremony", label: "Stars", icon: Wind },
         { href: "/letters", label: "Letters", icon: Mail },
-        { href: "/mirror", label: "Mirror", icon: User },
+        { href: "/mirror", label: "Look", icon: User },
     ];
 
     return (

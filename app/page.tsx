@@ -32,10 +32,10 @@ export default function Home() {
         className="space-y-4"
       >
         <h1 className="text-3xl font-light text-[var(--foreground)] tracking-tight">
-          Welcome back.
+          Hello again.
         </h1>
         <p className="text-sm text-[var(--nav-inactive)] max-w-[250px] mx-auto leading-relaxed">
-          Your space for letting go. Everything here stays on your device.
+          This is your safe place to let go of sad thoughts. Everything you write stays secret here.
         </p>
       </motion.div>
 
@@ -80,7 +80,7 @@ export default function Home() {
           onClick={() => window.location.href = '/practice'}
           className="px-8 py-3 bg-white text-[var(--primary-dark)] text-sm font-medium rounded-2xl shadow-sm border border-[var(--accent)] hover:shadow-md hover:bg-[var(--accent)]/10"
         >
-          Begin a Practice
+          Let's Practice
         </button>
       </motion.div>
     </div>

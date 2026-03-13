@@ -25,7 +25,7 @@ export default function Letters() {
 
         const letter: Letter = {
             id: Date.now().toString(),
-            title: newTitle.trim() || "Untitled Entry",
+            title: newTitle.trim() || "My Secret",
             content: newContent.trim(),
             date: new Date().toLocaleDateString(),
         };
@@ -45,8 +45,8 @@ export default function Letters() {
         <div className="relative min-h-[90vh] p-6 pb-24 flex flex-col">
             <div className="flex justify-between items-center mb-8">
                 <div>
-                    <h1 className="text-3xl font-light text-[var(--foreground)]">Unsent Letters</h1>
-                    <p className="text-sm text-[var(--nav-inactive)] mt-1">Words that need a place to softly land.</p>
+                    <h1 className="text-3xl font-light text-[var(--foreground)]">Secret Letters</h1>
+                    <p className="text-sm text-[var(--nav-inactive)] mt-1">Write what you feel. No one else will ever see it.</p>
                 </div>
 
                 {!isComposing && !activeLetter && (
@@ -71,7 +71,7 @@ export default function Letters() {
                         {letters.length === 0 ? (
                             <div className="flex-1 flex flex-col items-center justify-center text-[var(--nav-inactive)] opacity-70">
                                 <FileText size={48} className="mb-4 font-light" strokeWidth={1} />
-                                <p>No letters written yet.</p>
+                                <p>You haven't written any letters yet.</p>
                             </div>
                         ) : (
                             letters.map((letter, i) => (
@@ -112,7 +112,7 @@ export default function Letters() {
                         className="flex-1 flex flex-col bg-white rounded-2xl shadow-lg border border-[var(--accent)] overflow-hidden"
                     >
                         <div className="flex justify-between items-center p-4 border-b border-[var(--accent)]">
-                            <span className="text-sm font-medium text-[var(--nav-inactive)]">New Letter</span>
+                            <span className="text-sm font-medium text-[var(--nav-inactive)]">New Story</span>
                             <button onClick={() => setIsComposing(false)} className="text-[var(--nav-inactive)] hover:text-[var(--foreground)]">
                                 <X size={20} />
                             </button>
@@ -120,7 +120,7 @@ export default function Letters() {
 
                         <input
                             className="w-full text-xl font-medium px-6 py-4 outline-none"
-                            placeholder="Title or Recipient..."
+                            placeholder="Who is this for?"
                             value={newTitle}
                             onChange={(e) => setNewTitle(e.target.value)}
                         />
@@ -138,7 +138,7 @@ export default function Letters() {
                                 disabled={!newTitle && !newContent}
                                 className="px-6 py-2 bg-[var(--foreground)] text-[var(--nav-bg)] rounded-full text-sm font-medium disabled:opacity-50"
                             >
-                                Save Draft
+                                Save it
                             </button>
                         </div>
                     </motion.div>

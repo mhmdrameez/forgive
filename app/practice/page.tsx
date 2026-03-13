@@ -6,11 +6,11 @@ import { ChevronRight, Check } from "lucide-react";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 const steps = [
-    { id: 1, title: "Acknowledge", subtitle: "What happened? Describe the hurt simply.", type: "text" },
-    { id: 2, title: "Feel", subtitle: "How heavy does this feel right now? (1-10)", type: "slider" },
-    { id: 3, title: "Express", subtitle: "Let out your emotions. What do you wish you could say?", type: "text" },
-    { id: 4, title: "Release", subtitle: "I choose to release the hold this has on me.", type: "button", buttonText: "I release it" },
-    { id: 5, title: "Settle", subtitle: "How heavy does it feel now? (1-10)", type: "slider" },
+    { id: 1, title: "Say it", subtitle: "What made you sad? Tell me simply.", type: "text" },
+    { id: 2, title: "How heavy?", subtitle: "How heavy does this feel right now? (1-10)", type: "slider" },
+    { id: 3, title: "Let it out", subtitle: "Write what you want to say. It's okay to feel sad.", type: "text" },
+    { id: 4, title: "Let go", subtitle: "I am ready to let this go now.", type: "button", buttonText: "I am letting it go" },
+    { id: 5, title: "Better?", subtitle: "How heavy does it feel now? (1-10)", type: "slider" },
 ];
 
 export default function Practice() {
@@ -48,9 +48,9 @@ export default function Practice() {
                 >
                     <Check size={40} />
                 </motion.div>
-                <h2 className="text-2xl font-light text-[var(--foreground)]">Practice Complete</h2>
+                <h2 className="text-2xl font-light text-[var(--foreground)]">All Done!</h2>
                 <p className="text-[var(--nav-inactive)] max-w-[280px]">
-                    Every time you practice, the weight becomes a little lighter.
+                    Every time you do this, you will feel a little better.
                 </p>
                 <button
                     onClick={() => window.location.href = '/'}
@@ -114,8 +114,8 @@ export default function Practice() {
                                     className="w-full accent-[var(--primary)]"
                                 />
                                 <div className="flex justify-between w-full text-xs text-[var(--nav-inactive)]">
-                                    <span>Light</span>
-                                    <span>Extremely Heavy</span>
+                                    <span>Fine</span>
+                                    <span>Very Heavy</span>
                                 </div>
                             </div>
                         )}

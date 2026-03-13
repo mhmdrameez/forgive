@@ -6,11 +6,11 @@ import { Users, ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 const empathySteps = [
-    "Imagine looking at the situation from a distance.",
-    "Consider what the other person might have been struggling with.",
-    "Remember that hurt people sometimes hurt people.",
-    "Can you see any shared humanity in their flaws?",
-    "Understanding is not excusing. It is simply seeing clearly."
+    "Imagine you are watching a movie of what happened.",
+    "Think about why the other person might have been sad or angry.",
+    "Sometimes people are mean because they are hurting inside too.",
+    "Remember that everyone makes mistakes sometimes.",
+    "Knowing why they did it doesn't mean it was okay. It just helps you understand."
 ];
 
 export default function Empathy() {

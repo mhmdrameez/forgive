@@ -98,7 +98,7 @@ export default function Translator() {
             </button>
             {isOpen && (
                 <div className="absolute top-12 right-0 bg-white p-4 pb-14 rounded-3xl shadow-2xl border border-[var(--accent)] min-w-[260px] flex flex-col items-center gap-2">
-                    <span className="text-xs text-[var(--nav-inactive)] mb-3 w-full text-left font-medium uppercase tracking-widest pl-2">Language</span>
+                    <span className="text-xs text-[var(--nav-inactive)] mb-3 w-full text-left font-medium uppercase tracking-widest pl-2">Choose Language</span>
                     <div className="w-full flex flex-col gap-2">
                         {languages.map((lang) => {
                             const isActive = currentLang === lang.code;
@@ -111,7 +111,7 @@ export default function Translator() {
                             );
                         })}
                     </div>
-                    <button onClick={() => setIsOpen(false)} className="absolute bottom-5 text-[13px] font-medium text-[var(--nav-inactive)] hover:text-[var(--foreground)]">Close</button>
+                    <button onClick={() => setIsOpen(false)} className="absolute bottom-5 text-[13px] font-medium text-[var(--nav-inactive)] hover:text-[var(--foreground)]">Back</button>
                 </div>
             )}
             <div id="google_translate_element" className="opacity-0 pointer-events-none absolute h-0 w-0"></div>
