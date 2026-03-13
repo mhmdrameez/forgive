@@ -131,10 +131,16 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
                     </button>
                 </div>
 
-                <div className="pt-4">
-                    <div className="flex items-center gap-2 justify-center text-[10px] text-amber-600 font-medium tracking-tight bg-amber-50 py-2 rounded-xl border border-amber-100">
-                        <ShieldAlert size={12} />
-                        ZERO-KNOWLEDGE SECURITY ACTIVE
+                <div className="pt-4 space-y-4">
+                    <div className="flex flex-col items-center gap-2 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                        <div className="flex items-center gap-2 text-[10px] text-emerald-700 font-bold tracking-[0.1em] uppercase">
+                            <ShieldAlert size={14} className="text-emerald-600" />
+                            FBI-Level Encryption
+                        </div>
+                        <p className="text-[10px] text-emerald-600/80 leading-tight">
+                            "Zero-Knowledge" means we can never see your data. <br />
+                            Only your PIN can unlock your secrets.
+                        </p>
                     </div>
                 </div>
             </motion.div>
