@@ -34,9 +34,15 @@ export default function Home() {
         <h1 className="text-3xl font-light text-[var(--foreground)] tracking-tight">
           Hello again.
         </h1>
-        <p className="text-sm text-[var(--nav-inactive)] max-w-[250px] mx-auto leading-relaxed">
-          This is your safe place to let go of sad thoughts. Everything you write stays secret here.
-        </p>
+        <div className="space-y-4">
+          <p className="text-sm text-[var(--nav-inactive)] max-w-[250px] mx-auto leading-relaxed">
+            Your safe place for letting go. Everything is encrypted and private.
+          </p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--primary)]/5 border border-[var(--primary)]/20 rounded-full">
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
+            <span className="text-[10px] text-[var(--primary-dark)] font-bold uppercase tracking-widest">AES-256 Vault Active</span>
+          </div>
+        </div>
       </motion.div>
 
       {/* Visual Tracker: A simple growing circle/heart representing capacity to forgive */}

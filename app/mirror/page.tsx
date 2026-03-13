@@ -5,22 +5,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CameraOff, Heart, ShieldCheck } from "lucide-react";
 
 const prompts = [
-  "Look into your eyes.",
-  "You are safe.",
-  "You are enough.",
-  "Take a slow breath.",
-  "You are doing your best.",
-  "It's okay to feel this.",
-  "Forgive yourself.",
-  "You deserve kindness.",
-  "Be gentle with yourself.",
-  "You are stronger than you think.",
-  "You survived difficult days.",
-  "You are growing.",
-  "You matter.",
-  "You are not alone.",
-  "Stay with yourself.",
-  "This moment is enough."
+    "Look into your eyes.",
+    "You are safe.",
+    "You are enough.",
+    "Take a slow breath.",
+    "You are doing your best.",
+    "It's okay to feel this.",
+    "Forgive yourself.",
+    "You deserve kindness.",
+    "Be gentle with yourself.",
+    "You are stronger than you think.",
+    "You survived difficult days.",
+    "You are growing.",
+    "You matter.",
+    "You are not alone.",
+    "Stay with yourself.",
+    "This moment is enough."
 ];
 
 export default function Mirror() {
@@ -90,10 +90,11 @@ export default function Mirror() {
                     <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6 border border-white/10">
                         <CameraOff size={32} className="text-[var(--nav-inactive)]" />
                     </div>
-                    <h2 className="text-2xl font-light text-white mb-4 tracking-tight">Camera not working</h2>
+                    <h2 className="text-2xl font-light text-white mb-4 tracking-tight">Private & Safe</h2>
                     <p className="text-[var(--nav-inactive)] max-w-xs leading-relaxed font-light">
-                        I need to see you so we can do this together.
-                        Don't worry, no one else can see you.
+                        Your camera stays on your device.<br />
+                        No recording. No storage.<br />
+                        No one can see you.
                     </p>
                     <button
                         onClick={() => window.location.reload()}

@@ -158,11 +158,11 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
                     <div className="flex flex-col items-center gap-2 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
                         <div className="flex items-center gap-2 text-[10px] text-emerald-700 font-bold tracking-[0.1em] uppercase">
                             <ShieldAlert size={14} className="text-emerald-600" />
-                            FBI-Level Encryption
+                            AES-256 Encryption
                         </div>
                         <p className="text-[10px] text-emerald-600/80 leading-tight">
-                            "Zero-Knowledge" means we can never see your data. <br />
-                            Only your PIN can unlock your secrets.
+                            "Zero-Knowledge" means your data is unhackable. <br />
+                            Only your PIN can unlock your local vault.
                         </p>
                     </div>
                 </div>

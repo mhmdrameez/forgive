@@ -7,13 +7,16 @@
 const ALGORITHM = "AES-GCM";
 const KEY_LENGTH = 256;
 const ITERATIONS = 100000;
+const SIGNATURE = "v1:";
+const PEPPER = process.env.NEXT_PUBLIC_VAULT_PEPPER || "default-pepper-1";
 
 /**
  * Derives a cryptographic key from a user-provided PIN.
  */
 async function deriveKey(pin: string, salt: Uint8Array): Promise<CryptoKey> {
     const encoder = new TextEncoder();
-    const pinData = encoder.encode(pin);
+    // Mix the PIN with the system pepper for "Extra Security"
+    const pinData = encoder.encode(pin + PEPPER);
 
     const baseKey = await window.crypto.subtle.importKey(
         "raw",
@@ -63,8 +66,9 @@ export async function encryptData(data: string, pin: string): Promise<string> {
     combined.set(iv, salt.length);
     combined.set(new Uint8Array(ciphertext), salt.length + iv.length);
 
-    // Return as Base64 string
-    return btoa(String.fromCharCode(...combined));
+    // Return as Signed Base64 string
+    const base64 = btoa(String.fromCharCode(...combined));
+    return SIGNATURE + base64;
 }
 
 /**
@@ -73,8 +77,19 @@ export async function encryptData(data: string, pin: string): Promise<string> {
  */
 export async function decryptData(encryptedBase64: string, pin: string): Promise<string> {
     try {
+        // Validation: If it doesn't have our signature, it's not our encrypted data
+        if (!encryptedBase64.startsWith(SIGNATURE)) {
+            // Check if it's already plain JSON (legacy data fallback)
+            if (encryptedBase64.trim().startsWith("{") || encryptedBase64.trim().startsWith("[")) {
+                return encryptedBase64;
+            }
+            throw new Error("Malformatted data: missing signature");
+        }
+
+        const dataOnly = encryptedBase64.slice(SIGNATURE.length);
+
         const decoded = new Uint8Array(
-            atob(encryptedBase64).split("").map(c => c.charCodeAt(0))
+            atob(dataOnly).split("").map(c => c.charCodeAt(0))
         );
 
         // Extract components
