@@ -25,16 +25,29 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
         }
     }, []);
 
-    const handleUnlock = () => {
-        // In a real zero-knowledge system, we don't "check" the PIN against a hash to unlock.
-        // We use it to try and decrypt data. 
-        // For the UI state, we'll store the PIN in a session variable (memory only).
-        if (pin.length === 6) {
-            (window as any).__vault_key = pin;
-            setIsLocked(false);
-        } else {
+    const handleUnlock = async () => {
+        if (pin.length !== 6) {
             setError(true);
             setTimeout(() => setError(false), 500);
+            return;
+        }
+
+        try {
+            const sentinel = localStorage.getItem("vault-sentinel");
+            if (sentinel) {
+                // Try to decrypt the sentinel to verify the PIN
+                const { decryptData } = await import("@/lib/crypto");
+                await decryptData(sentinel, pin);
+            }
+
+            // If we got here, either no sentinel exists (first time) or decryption succeeded
+            (window as any).__vault_key = pin;
+            setIsLocked(false);
+        } catch (e) {
+            setError(true);
+            setPin("");
+            setTimeout(() => setError(false), 500);
+            console.error("Invalid PIN attempt");
         }
     };
 
@@ -46,11 +59,21 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
         }
     };
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         if (pin === confirmPin) {
-            localStorage.setItem("vault-check", "active"); // Just a flag that a vault exists
-            (window as any).__vault_key = pin;
-            setIsLocked(false);
+            try {
+                // Create an encrypted sentinel to verify PIN in the future
+                const { encryptData } = await import("@/lib/crypto");
+                const encryptedSentinel = await encryptData("vault-unlocked", pin);
+                localStorage.setItem("vault-sentinel", encryptedSentinel);
+                localStorage.setItem("vault-check", "active");
+
+                (window as any).__vault_key = pin;
+                setIsLocked(false);
+            } catch (e) {
+                console.error("Setup failed:", e);
+                setError(true);
+            }
         } else {
             setError(true);
             setPin("");
