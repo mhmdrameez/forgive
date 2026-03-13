@@ -104,88 +104,108 @@ export default function PrivacyLock({ children }: PrivacyLockProps) {
     if (!isLocked) return <>{children}</>;
 
     return (
-        <div className="fixed inset-0 z-[100] bg-[var(--background)] flex items-center justify-center p-6">
+        <div className="fixed inset-0 z-[100] bg-[var(--background)] flex flex-col items-center justify-center p-4 overflow-y-auto min-h-dvh">
             <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-sm bg-white rounded-[3rem] p-10 shadow-2xl border border-[var(--accent)] text-center space-y-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="w-full max-w-xs bg-white rounded-3xl p-6 shadow-2xl border border-[var(--accent)] text-center flex flex-col gap-5 my-auto"
             >
-                <div className="flex justify-center">
-                    <div className="w-20 h-20 rounded-full bg-[var(--primary)]/10 flex items-center justify-center relative">
+                {/* Icon */}
+                <div className="flex justify-center pt-2">
+                    <div className="w-16 h-16 rounded-full bg-[var(--primary)]/10 flex items-center justify-center">
                         <motion.div
-                            animate={error ? { x: [-5, 5, -5, 5, 0] } : isProcessing ? { scale: [1, 1.1, 1], rotate: 360 } : {}}
-                            transition={isProcessing ? { duration: 1, repeat: Infinity } : { duration: 0.4 }}
+                            animate={error ? { x: [-5, 5, -5, 5, 0] } : {}}
+                            transition={{ duration: 0.4 }}
                         >
-                            {isProcessing ? <div className="w-8 h-8 rounded-full border-2 border-[var(--primary)] border-t-transparent animate-spin" /> : mode === "enter" ? <Lock className="text-[var(--primary)]" size={32} /> : <KeyRound className="text-[var(--primary)]" size={32} />}
+                            {isProcessing
+                                ? <div className="w-7 h-7 rounded-full border-2 border-[var(--primary)] border-t-transparent animate-spin" />
+                                : mode === "enter"
+                                    ? <Lock className="text-[var(--primary)]" size={28} />
+                                    : <KeyRound className="text-[var(--primary)]" size={28} />
+                            }
                         </motion.div>
                     </div>
                 </div>
 
-                <div className="space-y-2">
-                    <h2 className={`text-2xl font-light transition-colors ${error ? "text-red-500" : "text-[var(--foreground)]"}`}>
-                        {error ? "Wrong PIN" : mode === "enter" ? "Enter Vault PIN" : mode === "setup" ? "Secure Your Vault" : "Confirm Your PIN"}
+                {/* Title & subtitle */}
+                <div className="space-y-1">
+                    <h2 className={`text-xl font-medium transition-colors ${error ? "text-red-500" : "text-[var(--foreground)]"}`}>
+                        {error
+                            ? "Wrong PIN — Try Again"
+                            : mode === "enter"
+                                ? "Enter Your PIN"
+                                : mode === "setup"
+                                    ? "Create a Vault PIN"
+                                    : "Confirm Your PIN"}
                     </h2>
-                    <p className="text-xs text-[var(--nav-inactive)] leading-relaxed px-4">
+                    <p className="text-[11px] text-[var(--nav-inactive)] leading-relaxed px-2">
                         {mode === "enter"
-                            ? "Your data is encrypted. Enter your 6-digit PIN to unlock it."
+                            ? "Your data is encrypted. Only your PIN can unlock it."
                             : mode === "setup"
-                                ? "Create a 6-digit PIN. This will be the only way to read your letters."
-                                : "Please type your 6-digit PIN again to confirm."}
+                                ? "Pick a 6-digit PIN. Don't forget it — it's the only key."
+                                : "Type the same PIN again to confirm."}
                     </p>
                 </div>
 
+                {/* Dots */}
                 <div className="flex justify-center gap-3">
                     {[...Array(6)].map((_, i) => (
                         <div
                             key={i}
-                            className={`w-4 h-4 rounded-full border-2 transition-all duration-300 ${pin.length > i ? "bg-[var(--primary)] border-[var(--primary)]" : "border-[var(--accent)]"
+                            className={`w-3.5 h-3.5 rounded-full border-2 transition-all duration-200 ${pin.length > i
+                                    ? "bg-[var(--primary)] border-[var(--primary)] scale-110"
+                                    : "border-[var(--accent)]"
                                 }`}
                         />
                     ))}
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 max-w-[240px] mx-auto">
+                {/* Numpad */}
+                <div className="grid grid-cols-3 gap-2.5 w-full px-2">
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
                         <button
                             key={num}
-                            onClick={() => pin.length < 6 && setPin(pin + num)}
-                            className="h-14 rounded-2xl bg-[var(--accent)]/30 text-xl font-light hover:bg-[var(--accent)]/50 active:scale-95 transition-all text-[var(--foreground)]"
+                            onClick={() => !isProcessing && pin.length < 6 && setPin(pin + num)}
+                            disabled={isProcessing}
+                            className="h-14 rounded-2xl bg-[var(--accent)]/30 text-xl font-normal hover:bg-[var(--accent)]/50 active:scale-95 active:bg-[var(--primary)]/10 transition-all text-[var(--foreground)] disabled:opacity-40 select-none"
                         >
                             {num}
                         </button>
                     ))}
+                    {/* DEL */}
                     <button
-                        onClick={() => setPin(pin.slice(0, -1))}
-                        className="h-14 rounded-2xl bg-red-50 text-red-400 text-sm hover:bg-red-100 active:scale-95 transition-all"
+                        onClick={() => !isProcessing && setPin(pin.slice(0, -1))}
+                        disabled={isProcessing}
+                        className="h-14 rounded-2xl bg-red-50 text-red-400 text-sm font-medium hover:bg-red-100 active:scale-95 transition-all disabled:opacity-40 select-none"
                     >
                         DEL
                     </button>
+                    {/* 0 */}
                     <button
-                        onClick={() => pin.length < 6 && setPin(pin + "0")}
-                        className="h-14 rounded-2xl bg-[var(--accent)]/30 text-xl font-light hover:bg-[var(--accent)]/50 active:scale-95 transition-all text-[var(--foreground)]"
+                        onClick={() => !isProcessing && pin.length < 6 && setPin(pin + "0")}
+                        disabled={isProcessing}
+                        className="h-14 rounded-2xl bg-[var(--accent)]/30 text-xl font-normal hover:bg-[var(--accent)]/50 active:scale-95 active:bg-[var(--primary)]/10 transition-all text-[var(--foreground)] disabled:opacity-40 select-none"
                     >
                         0
                     </button>
+                    {/* OK */}
                     <button
                         onClick={mode === "enter" ? handleUnlock : mode === "setup" ? handleSetup : handleConfirm}
-                        disabled={pin.length < 6}
+                        disabled={pin.length < 6 || isProcessing}
                         className="h-14 rounded-2xl bg-[var(--primary)] text-white flex items-center justify-center disabled:opacity-30 active:scale-95 transition-all"
                     >
-                        <Unlock size={20} />
+                        {isProcessing
+                            ? <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                            : <Unlock size={18} />
+                        }
                     </button>
                 </div>
 
-                <div className="pt-4 space-y-4">
-                    <div className="flex flex-col items-center gap-2 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                        <div className="flex items-center gap-2 text-[10px] text-emerald-700 font-bold tracking-[0.1em] uppercase">
-                            <ShieldAlert size={14} className="text-emerald-600" />
-                            AES-256 Encryption
-                        </div>
-                        <p className="text-[10px] text-emerald-600/80 leading-tight">
-                            "Zero-Knowledge" means your data is unhackable. <br />
-                            Only your PIN can unlock your local vault.
-                        </p>
-                    </div>
+                {/* Security badge */}
+                <div className="flex items-center gap-2 justify-center px-3 py-2.5 bg-emerald-50 rounded-2xl border border-emerald-100">
+                    <ShieldAlert size={12} className="text-emerald-600 shrink-0" />
+                    <span className="text-[10px] text-emerald-700 font-bold tracking-wide uppercase">AES-256 · Zero-Knowledge Vault</span>
                 </div>
             </motion.div>
         </div>
