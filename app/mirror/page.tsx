@@ -5,14 +5,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CameraOff, Heart, ShieldCheck } from "lucide-react";
 
 const prompts = [
-    "Look at yourself in the mirror...",
-    "Say hello to yourself.",
-    "You have been very brave today.",
-    "I forgive myself for my mistakes.",
-    "I am good to others, and I should be good to myself too.",
-    "Take a breath... You are doing great.",
-    "It's okay to make mistakes.",
-    "I am good just the way I am."
+  "Look into your eyes.",
+  "You are safe.",
+  "You are enough.",
+  "Take a slow breath.",
+  "You are doing your best.",
+  "It's okay to feel this.",
+  "Forgive yourself.",
+  "You deserve kindness.",
+  "Be gentle with yourself.",
+  "You are stronger than you think.",
+  "You survived difficult days.",
+  "You are growing.",
+  "You matter.",
+  "You are not alone.",
+  "Stay with yourself.",
+  "This moment is enough."
 ];
 
 export default function Mirror() {
