@@ -32,13 +32,13 @@ export default function Translator() {
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label="Select Language"
-                className="w-10 h-10 bg-white shadow-sm border border-[var(--accent)] rounded-full flex items-center justify-center text-[var(--nav-inactive)] hover:text-[var(--foreground)] transition-colors"
+                className="w-10 h-10 bg-[var(--nav-bg)] shadow-sm border border-[var(--accent)] rounded-full flex items-center justify-center text-[var(--nav-inactive)] hover:text-[var(--foreground)] transition-colors"
             >
                 {current ? <span className="text-base">{current.flag}</span> : <Globe size={18} />}
             </button>
 
             {isOpen && (
-                <div className="absolute top-12 right-0 bg-white p-3 pb-12 rounded-3xl shadow-2xl border border-[var(--accent)] w-[200px] flex flex-col items-center gap-1 max-h-[80vh] overflow-y-auto">
+                <div className="absolute top-12 right-0 bg-[var(--nav-bg)] p-3 pb-12 rounded-3xl shadow-2xl border border-[var(--accent)] w-[200px] flex flex-col items-center gap-1 max-h-[80vh] overflow-y-auto">
                     <span className="text-[10px] text-[var(--nav-inactive)] mb-2 w-full text-left font-bold uppercase tracking-widest pl-2">
                         Language
                     </span>
@@ -49,13 +49,13 @@ export default function Translator() {
                                 key={l.code}
                                 onClick={() => handleSelect(l.code)}
                                 dir={l.dir}
-                                className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-2xl transition-all text-left ${active ? "bg-[var(--primary)]/10 border border-[var(--primary)]/30" : "hover:bg-[var(--accent)]/40"}`}
+                                className={`flex items-center gap-3 w-full px-3 py-3 rounded-2xl transition-all text-left ${active ? "bg-[var(--primary)]/10 border border-[var(--primary)]/30" : "hover:bg-[var(--accent)]/40"}`}
                             >
-                                <span className="text-lg">{l.flag}</span>
-                                <span className={`text-sm font-medium flex-1 ${active ? "text-[var(--primary-dark)]" : "text-[var(--foreground)]"}`}>
+                                <span className="text-xl">{l.flag}</span>
+                                <span className={`text-base font-medium flex-1 leading-relaxed notranslate ${active ? "text-[var(--primary-dark)]" : "text-[var(--foreground)]"}`}>
                                     {l.name}
                                 </span>
-                                {active && <Check size={14} className="text-[var(--primary-dark)] shrink-0" />}
+                                {active && <Check size={16} className="text-[var(--primary-dark)] shrink-0" />}
                             </button>
                         );
                     })}
