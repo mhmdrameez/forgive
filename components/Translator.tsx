@@ -124,18 +124,21 @@ export default function Translator({ initialLang, initialTranslations }: Transla
 
         // Batch upload new translations to Redis every 10 seconds
         const uploadInterval = setInterval(async () => {
-            if (Object.keys(pendingTranslations.current).length > 0 && currentLang) {
+            const langAtCapture = currentLang; // Capture current lang for this batch
+            if (Object.keys(pendingTranslations.current).length > 0 && langAtCapture && langAtCapture !== "en") {
                 const batch = { ...pendingTranslations.current };
                 pendingTranslations.current = {};
                 try {
                     await fetch("/api/language", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ lang: currentLang, translations: batch }),
+                        body: JSON.stringify({ lang: langAtCapture, translations: batch }),
                     });
                 } catch (e) {
-                    // Put back in pending if failed
-                    pendingTranslations.current = { ...batch, ...pendingTranslations.current };
+                    // Put back in pending only if language hasn't changed
+                    if (currentLang === langAtCapture) {
+                        pendingTranslations.current = { ...batch, ...pendingTranslations.current };
+                    }
                 }
             }
         }, 10000);
@@ -154,49 +157,40 @@ export default function Translator({ initialLang, initialTranslations }: Transla
             setIsOpen(false);
         }
 
-        // 2. Trigger Google Translate IMMEDIATELY to start its process
+        // 2. IMPORTANT: Wipe caches to prevent cross-language pollution
+        translationCache.current = {};
+        pendingTranslations.current = {};
+
+        // 3. Trigger Google Translate IMMEDIATELY to start its process
         const selectElement = document.querySelector(".goog-te-combo") as HTMLSelectElement;
         if (selectElement) {
             selectElement.value = langCode;
             selectElement.dispatchEvent(new Event("change", { bubbles: true }));
         }
 
-        // 3. Reset the DOM to English baseline before applying new cache
+        // 4. Reset the DOM to English baseline before applying new cache
         const elements = document.querySelectorAll("[data-orig-text]");
         elements.forEach(el => {
-            if (langCode === "en") {
-                el.textContent = el.getAttribute("data-orig-text");
-                el.removeAttribute("data-translated");
-            } else {
-                // If we already have this lang in our local cache ref, apply it instantly
-                const orig = el.getAttribute("data-orig-text");
-                if (orig && translationCache.current[orig]) {
-                    el.textContent = translationCache.current[orig];
-                    el.setAttribute("data-translated", "true");
-                } else {
-                    // Fallback to English while waiting for Google or Fetch
-                    el.textContent = orig;
-                    el.removeAttribute("data-translated");
-                }
-            }
+            const orig = el.getAttribute("data-orig-text");
+            el.textContent = orig;
+            el.removeAttribute("data-translated");
         });
 
         if (langCode === "en") return;
 
-        // 4. Fetch/Update specific language cache from Redis to fill gaps
+        // 5. Fetch specific language cache from Redis for INSTANT update
         try {
             const res = await fetch(`/api/language?lang=${langCode}`);
             const data = await res.json();
             if (data.translations) {
-                // Merge new translations into our current cache
-                translationCache.current = { ...translationCache.current, ...data.translations };
-                applyCachedTranslations(translationCache.current);
+                translationCache.current = data.translations;
+                applyCachedTranslations(data.translations);
             }
         } catch (e) {
             console.error("Failed to fetch language cache", e);
         }
 
-        // 5. Update server cookie
+        // 6. Update server cookie
         await fetch("/api/language", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
